@@ -5,9 +5,9 @@ const getLatestPodVersion = require('./PublicPodFetcher');
 // import compareVersions
 const compareVersions = require('./CompareVersions');
 
-class CocoapodsTracker {
+class CocoapodsScanner {
     /**
-     * Creates a new instance of the CocoapodsTracker class.
+     * Creates a new instance of the CocoapodsScanner class.
      * @param {string} podfilePath - The path to the Podfile.
      * @param {string} lockfilePath - The path to the Podfile.lock.
      */
@@ -61,4 +61,4 @@ class CocoapodsTracker {
 }
 
 // export the class
-module.exports = CocoapodsTracker;
+module.exports = CocoapodsScanner;
