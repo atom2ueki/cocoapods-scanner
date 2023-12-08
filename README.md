@@ -15,10 +15,48 @@ npm install --save cocoapods-scanner
 ## Usage
 Initialize the CocoapodsScanner class with the paths to your Podfile and Podfile.lock:
 
+### Scan from github repo
+- setup GITHUB_TOKEN env variable
+```bash
+export GITHUB_TOKEN={your_github_token}
+```
+- usage
 ```js
-import CocoapodsScanner from 'cocoapods-scanner';
+import { CocoapodsScanner, ContentReader, ContentReaderType } from 'cocoapods-scanner';
 
-let scanner = new CocoapodsScanner('./Podfile', './Podfile.lock')
+let blackList = [] // exclude from scanning
+let podfileReader = new ContentReader(ContentReaderType.github, {owner: {repo_owner}, repo: {repo_name}, path: 'Podfile'})
+let podfileLockReader = new ContentReader(ContentReaderType.github, {owner: {repo_owner}, repo: {repo_name}, path: 'Podfile.lock'})
+
+let scanner = new CocoapodsScanner(podfileReader, podfileLockReader, blackList)
+
+scanner.scan()
+```
+
+### Scan local Podfile
+- usage
+```js
+import { CocoapodsScanner, ContentReader, ContentReaderType } from 'cocoapods-scanner';
+
+let blackList = [] // exclude from scanning
+let podfileReader = new ContentReader(ContentReaderType.file, {path: 'Podfile'})
+let podfileLockReader = new ContentReader(ContentReaderType.file, {path: 'Podfile.lock'})
+
+let scanner = new CocoapodsScanner(podfileReader, podfileLockReader, blackList)
+
+scanner.scan()
+```
+
+### Scan from remote server
+- usage
+```js
+import { CocoapodsScanner, ContentReader, ContentReaderType } from 'cocoapods-scanner';
+
+let blackList = [] // exclude from scanning
+let podfileReader = new ContentReader(ContentReaderType.url, {path: {remote_link}})
+let podfileLockReader = new ContentReader(ContentReaderType.url, {path: {remote_link}})
+
+let scanner = new CocoapodsScanner(podfileReader, podfileLockReader, blackList)
 
 scanner.scan()
 ```

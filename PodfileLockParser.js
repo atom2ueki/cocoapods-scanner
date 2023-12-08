@@ -1,43 +1,36 @@
-const fs = require('fs').promises;
-
 /**
- * Parses the contents of a Podfile.lock file and returns an array of packages that match the search list.
- * @param {string} filePath - The path to the Podfile.lock file.
- * @param {string[]} searchList - The list of package names to search for.
- * @returns {Promise<{ name: string, version: string }[]>} - A promise that resolves to an array of parsed packages.
- * @throws {Error} - If there is an error reading the Podfile.lock file.
+ * Parses the content of a Podfile.lock using the provided reader and search list.
+ * @param {object} reader - The reader object used to fetch the content of the file.
+ * @param {Array} searchList - The list of items to search for in the Podfile.lock.
+ * @returns {Promise} - A promise that resolves to the parsed result of the Podfile.lock.
+ * @throws {Error} - If there is an error reading the file.
  */
-async function parsePodfileLock(filePath, searchList) {
+async function parsePodfileLock(reader, searchList) {
     try {
-        // Read the contents of the Podfile.lock file asynchronously
-        const fileContent = await fs.readFile(filePath, 'utf-8');
-
-        // Regular expression to match pod entries
-        const regex = /(\w+)\s+\(([\d.]+)\)/g;
-
-        // Array to store parsed packages
-        const parsedPackages = [];
-
-        // Iterate over matches in the file content
-        let match;
-        while ((match = regex.exec(fileContent)) !== null) {
-            const name = match[1];
-            const version = match[2];
-
-            // Check if the current pod is in the search list
-            if (searchList.includes(name)) {
-                // Store the result in the specified format
-                parsedPackages.push({ name, version });
-            }
-        }
-
-        // Return the parsed packages
-        return parsedPackages;
-    } catch (err) {
-        // Handle file read errors
-        console.error('Error reading Podfile.lock:', err.message);
-        throw err;
+        const content = await reader.fetch();
+        return parsePodfileLockContent(content, searchList);
+    } catch (error) {
+        console.error('Error reading the file:', error);
+        throw error;
     }
+}
+
+// create parsePodfileLockContent function
+function parsePodfileLockContent(podfileLockContent, searchList) {
+    const regex = /(\w+)\s+\(([\d.]+)\)/g;
+    const parsedPackages = [];
+
+    let match;
+    while ((match = regex.exec(podfileLockContent)) !== null) {
+        const name = match[1];
+        const version = match[2];
+
+        if (searchList.includes(name)) {
+            parsedPackages.push({ name, version });
+        }
+    }
+
+    return parsedPackages;
 }
 
 module.exports = parsePodfileLock;
