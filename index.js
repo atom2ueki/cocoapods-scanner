@@ -96,46 +96,61 @@ class CocoapodsScanner {
     }
 
     /**
-     * Checks the version of a library against the latest available version.
+     * Checks the version of a library and determines if it is outdated.
      * @param {Object} library - The library object containing the name and version.
-     * @returns {Promise<void>} - A promise that resolves once the version check is complete.
+     * @returns {Object} - The result object with the library name, current version, latest version, and whether it's outdated.
      */
     checkLibraryVersions = async function(library) {
         try {
             const latest = await getLatestPodVersion(library.name);
-            const result = compareVersions(library.version, latest.version);
-            console.log(`${library.name}: ${result}`);
+            const isNewVersionAvailable = compareVersions(library.version, latest.version);
+            if (isNewVersionAvailable) {
+                // construct the result object with name, current version, latest version, and whether it's outdated
+                var result = {
+                    name: library.name,
+                    currentVersion: library.version,
+                    latestVersion: latest.version,
+                    outdated: true
+                }
+            } else {
+                // construct the result object with name, current version, latest version, and whether it's outdated
+                var result = {
+                    name: library.name,
+                    currentVersion: library.version,
+                    latestVersion: latest.version,
+                    outdated: false
+                }
+            }
+            return result;
         } catch (error) {
             console.error(`Error fetching latest version for ${library.name}: ${error.message}`);
         }
     }
 
     /**
-     * Checks the versions of all libraries in the given array.
+     * Checks the versions of multiple libraries.
      * @param {Array} libraryVersions - An array of library versions to check.
-     * @returns {Promise} - A promise that resolves when all library versions have been checked.
+     * @returns {Promise<Array>} - A promise that resolves to an array of results.
      */
     checkAllLibraryVersions = async function(libraryVersions) {
-        for (const library of libraryVersions) {
-            await this.checkLibraryVersions(library);
+        let results = [];
+        for (let i = 0; i < libraryVersions.length; i++) {
+            const result = await this.checkLibraryVersions(libraryVersions[i]);
+            results.push(result);
         }
+        return results;
     }
 
     /**
-     * Scans the installed packages by parsing the podfile and lockfile.
-     * @returns {Promise<void>} A promise that resolves when the scan is complete.
+     * Scans the installed packages and checks the versions of all the libraries.
+     * @returns {Promise} A promise that resolves with the results of the scan.
      */
-    scan = function() {
-        parseInstalledPackages(this.podfileReader, this.lockfileReader, this.blacklist)
-            .then((result) => {
-                // JSON.stringify Print the result in beautiful format with emoji
-                // console.log(JSON.stringify(result, null, 2));
-                this.checkAllLibraryVersions(result);
-            })
-            .catch((error) => {
-                // Handle errors
-                console.error(error);
-            });
+    scan = async function() {
+        // await parse the installed packages
+        // try await
+        let result = await parseInstalledPackages(this.podfileReader, this.lockfileReader, this.blacklist)
+        // check the versions of all the libraries and return the results
+        return this.checkAllLibraryVersions(result);
     }
 }
 

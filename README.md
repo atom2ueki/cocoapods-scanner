@@ -30,7 +30,15 @@ let podfileLockReader = new ContentReader(ContentReaderType.github, {owner: {rep
 
 let scanner = new CocoapodsScanner(podfileReader, podfileLockReader, blackList)
 
-scanner.scan()
+// start scan
+scanner.scan().then(result => {
+    let outdatedLibraries = result.filter(library => library.outdated)
+    if (outdatedLibraries.length > 0) {
+        console.log(JSON.stringify(outdatedLibraries, null, 2))
+    } else {
+        console.log('No outdated libraries')
+    }
+})
 ```
 
 ### Scan local Podfile
@@ -44,7 +52,14 @@ let podfileLockReader = new ContentReader(ContentReaderType.file, {path: 'Podfil
 
 let scanner = new CocoapodsScanner(podfileReader, podfileLockReader, blackList)
 
-scanner.scan()
+scanner.scan().then(result => {
+    let outdatedLibraries = result.filter(library => library.outdated)
+    if (outdatedLibraries.length > 0) {
+        console.log(JSON.stringify(outdatedLibraries, null, 2))
+    } else {
+        console.log('No outdated libraries')
+    }
+})
 ```
 
 ### Scan from remote server
@@ -58,7 +73,14 @@ let podfileLockReader = new ContentReader(ContentReaderType.url, {path: {remote_
 
 let scanner = new CocoapodsScanner(podfileReader, podfileLockReader, blackList)
 
-scanner.scan()
+scanner.scan().then(result => {
+    let outdatedLibraries = result.filter(library => library.outdated)
+    if (outdatedLibraries.length > 0) {
+        console.log(JSON.stringify(outdatedLibraries, null, 2))
+    } else {
+        console.log('No outdated libraries')
+    }
+})
 ```
 
 ## Features

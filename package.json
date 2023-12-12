@@ -1,6 +1,6 @@
 {
   "name": "cocoapods-scanner",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A library to track the latest version of cocoapods",
   "main": "index.js",
   "scripts": {
