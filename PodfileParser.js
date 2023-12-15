@@ -33,11 +33,8 @@ function parsePodfileContent(podfileContent, blacklist) {
     while ((match = podRegex.exec(podfileContent)) !== null) {
         const fullName = match[1];
         const parts = fullName.split('/');
-
-        if (parts.length === 1) {
-            // If there is no slash, it's a top-level dependency
-            dependencies.add(parts[0]);
-        }
+        // incase of pod 'Firebase/Core' the parts will be ['Firebase', 'Core']
+        dependencies.add(parts[0]);
     }
 
     // Convert Set to an array and exclude entries found in the blacklist
